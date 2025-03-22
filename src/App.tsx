@@ -30,6 +30,8 @@ function App() {
   );
   const [isRunning, setIsRunning] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [numRows, setNumRows] = useState(1);
+  const [numCols, setNumCols] = useState(1);
   const timerGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,6 +65,15 @@ function App() {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  useEffect(() => {
+    const updateGridLayout = () => {
+      setNumCols(Math.ceil(Math.sqrt(timers.length)));
+      // setNumRows(Math.ceil(timers.length / numCols));
+    };
+
+    updateGridLayout();
+  }, [timers]);
 
   const addTimer = () => {
     const colors = [
@@ -194,7 +205,7 @@ function App() {
 
           <div 
             ref={timerGridRef} 
-            className={`relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${
+            className={`relative grid grid-cols-${numCols} md:grid-cols-${numCols} lg:grid-cols-${numCols} gap-6 ${
               isFullscreen ? 'h-screen p-6 bg-gray-100' : ''
             }`}
           >
