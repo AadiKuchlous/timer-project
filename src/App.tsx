@@ -233,9 +233,6 @@ function App() {
                   <div className={`font-bold mb-2 ${isFullscreen ? 'text-8xl' : 'text-4xl'}`}>
                     {formatTime(timer.timeLeft)}
                   </div>
-                  <div className="text-sm opacity-80">
-                    {timer.percentage}% of {baseTime}m = {((baseTime * timer.percentage) / 100).toFixed(1)}m
-                  </div>
                 </div>
               </div>
             ))}
