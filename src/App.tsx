@@ -250,7 +250,7 @@ function App() {
             
             <button
               onClick={toggleFullscreen}
-              className="fixed bottom-4 left-4 p-3 bg-gray-800 text-white rounded-full hover:bg-gray-700 shadow-lg z-50"
+              className="fixed bottom-4 right-4 p-3 bg-gray-800 text-white rounded-full hover:bg-gray-700 shadow-lg z-50"
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
               {isFullscreen ? <Minimize2 size={24} /> : <Maximize2 size={24} />}
