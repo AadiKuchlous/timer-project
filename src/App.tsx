@@ -22,6 +22,7 @@ const PRESET_MODES = {
 
 function App() {
   const [baseTime, setBaseTime] = useState<number>(35);
+  const [baseTimeString, setBaseTimeString] = useState<string>("35");
   const [timers, setTimers] = useState<Timer[]>(
     PRESET_MODES.single.map(timer => ({
       ...timer,
@@ -69,7 +70,6 @@ function App() {
   useEffect(() => {
     const updateGridLayout = () => {
       setNumCols(Math.ceil(Math.sqrt(timers.length)));
-      // setNumRows(Math.ceil(timers.length / numCols));
     };
 
     updateGridLayout();
@@ -78,7 +78,7 @@ function App() {
   const addTimer = () => {
     const colors = [
       '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
-      '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB'
+      '#F0D15C', '#D4A5A5', '#9B59B6', '#3498DB'
     ];
     const newTimer: Timer = {
       id: Date.now().toString(),
@@ -94,12 +94,25 @@ function App() {
   };
 
   const updatePercentage = (id: string, percentage: number) => {
-    setTimers(timers.map(timer => 
-      timer.id === id 
-        ? { ...timer, percentage, timeLeft: (baseTime * 60 * percentage) / 100 }
+    setTimers(timers.map(timer => {
+      percentage = Number.isNaN(percentage) ? 0 : percentage;
+      const base_time = Number.isNaN(baseTime) ? 0 : baseTime;
+      return timer.id === id 
+        ? { ...timer, percentage, timeLeft: (base_time * 60 * percentage) / 100 }
         : timer
-    ));
+  }));
   };
+
+  const UpdateStartTime = () => {
+    setTimers(timers.map(timer => {
+      const base_time = Number.isNaN(baseTime) ? 0 : baseTime;
+      return { ...timer, timeLeft: (base_time * 60 * timer.percentage) / 100 }
+  }));
+  };
+
+  useEffect(() => {
+      UpdateStartTime();
+  }, [baseTime]);
 
   const startTimers = () => {
     setTimers(timers.map(timer => ({
@@ -173,8 +186,17 @@ function App() {
               <input
                 type="number"
                 min="0"
-                value={baseTime}
-                onChange={(e) => setBaseTime(Math.max(1, parseInt(e.target.value) || 0))}
+                value={baseTimeString}
+                onChange={(e) => {
+                  if (e.target.value == '') {
+                    setBaseTimeString(e.target.value);
+                    setBaseTime(0);
+                    return;
+                  }
+                  if (Number.isNaN(parseInt(e.target.value))) return;
+                  setBaseTimeString(e.target.value);
+                  setBaseTime(Math.max(parseInt(e.target.value)));
+                }}
                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                 disabled={isRunning}
               />
@@ -205,9 +227,8 @@ function App() {
 
           <div 
             ref={timerGridRef} 
-            className={`relative grid grid-cols-${numCols} md:grid-cols-${numCols} lg:grid-cols-${numCols} gap-6 ${
-              isFullscreen ? 'h-screen p-6 bg-gray-100' : ''
-            }`}
+            className={`relative grid gap-6 ${isFullscreen ? 'h-screen p-6 bg-gray-100' : ''}`}
+            style={{ gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))` }}
           >
             {timers.map(timer => (
               <div
@@ -227,16 +248,18 @@ function App() {
                 
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-1">
-                    Percentage of Base Time
+                  Percentage of Base Time
                   </label>
                   <input
-                    type="number"
-                    min="0"
-                    max="1000"
-                    value={timer.percentage}
-                    onChange={(e) => updatePercentage(timer.id, Math.max(parseInt(e.target.value)))}
-                    className="w-full px-3 py-1 rounded border-0 bg-white/20 text-white placeholder-white/60"
-                    disabled={isRunning}
+                  type="number"
+                  min="0"
+                  max="1000"
+                  value={String(timer.percentage)}
+                  onChange={(e) => {
+                    updatePercentage(timer.id, parseInt(e.target.value))
+                  }}
+                  className="w-full px-3 py-1 rounded border-0 bg-white/20 text-white placeholder-white/60"
+                  disabled={isRunning}
                   />
                 </div>
                 
