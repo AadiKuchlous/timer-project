@@ -10,13 +10,13 @@ interface Timer {
 
 const PRESET_MODES = {
   single: [
-    { id: '1', percentage: 100, color: '#FF6B6B' }
+    { id: '1', percentage: 100, color: '#cacaca' }
   ],
   multiple: [
-    { id: '1', percentage: 100, color: '#FF6B6B' },
-    { id: '2', percentage: 125, color: '#4ECDC4' },
-    { id: '3', percentage: 150, color: '#45B7D1' },
-    { id: '4', percentage: 200, color: '#96CEB4' }
+    { id: '1', percentage: 100, color: '#cacaca' },
+    { id: '2', percentage: 125, color: '#f5a399' },
+    { id: '3', percentage: 150, color: '#a1dbdf' },
+    { id: '4', percentage: 200, color: '#ffd458' }
   ]
 };
 
@@ -78,7 +78,7 @@ function App() {
   const addTimer = () => {
     const colors = [
       '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
-      '#F0D15C', '#D4A5A5', '#9B59B6', '#3498DB'
+      '#bdf682', '#D4A5A5', '#9B59B6', '#3498DB'
     ];
     const newTimer: Timer = {
       id: Date.now().toString(),
@@ -233,7 +233,7 @@ function App() {
             {timers.map(timer => (
               <div
                 key={timer.id}
-                className={`rounded-lg p-6 text-white relative ${
+                className={`rounded-lg p-6 text-gray-800 relative ${
                   isFullscreen ? 'flex flex-col justify-center' : ''
                 }`}
                 style={{ backgroundColor: timer.color }}
@@ -258,7 +258,7 @@ function App() {
                   onChange={(e) => {
                     updatePercentage(timer.id, parseInt(e.target.value))
                   }}
-                  className="w-full px-3 py-1 rounded border-0 bg-white/20 text-white placeholder-white/60"
+                  className="w-full px-3 py-1 rounded border-0 bg-white/20 text-gray-800 placeholder-white/60"
                   disabled={isRunning}
                   />
                 </div>
