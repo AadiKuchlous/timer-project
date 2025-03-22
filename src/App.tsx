@@ -135,7 +135,7 @@ function App() {
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Multi Timer</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Timer</h1>
             <div className="flex gap-3">
               <button
                 onClick={() => setPresetMode('single')}
