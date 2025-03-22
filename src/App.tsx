@@ -172,7 +172,7 @@ function App() {
               </label>
               <input
                 type="number"
-                min="1"
+                min="0"
                 value={baseTime}
                 onChange={(e) => setBaseTime(Math.max(1, parseInt(e.target.value) || 0))}
                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
@@ -231,10 +231,10 @@ function App() {
                   </label>
                   <input
                     type="number"
-                    min="1"
+                    min="0"
                     max="1000"
                     value={timer.percentage}
-                    onChange={(e) => updatePercentage(timer.id, Math.max(1, parseInt(e.target.value) || 0))}
+                    onChange={(e) => updatePercentage(timer.id, Math.max(parseInt(e.target.value)))}
                     className="w-full px-3 py-1 rounded border-0 bg-white/20 text-white placeholder-white/60"
                     disabled={isRunning}
                   />
