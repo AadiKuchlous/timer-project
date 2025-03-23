@@ -247,9 +247,6 @@ function App() {
                 </button>
                 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                  Percentage of Base Time
-                  </label>
                   <input
                   type="number"
                   min="0"
