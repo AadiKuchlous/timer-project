@@ -93,12 +93,18 @@ function App() {
     setTimers(timers.filter(timer => timer.id !== id));
   };
 
+  const calculateTimeLeft = (percentage: number) => {
+    var timeLeft = (baseTime * 60 * (100 + percentage)) / 100;
+    var timeLeftRoundedUp = Math.ceil(timeLeft / 60) * 60;
+    return timeLeftRoundedUp;
+  };
+
   const updatePercentage = (id: string, percentage: number) => {
     setTimers(timers.map(timer => {
       percentage = Number.isNaN(percentage) ? 0 : percentage;
       const base_time = Number.isNaN(baseTime) ? 0 : baseTime;
       return timer.id === id 
-        ? { ...timer, percentage, timeLeft: (base_time * 60 * (100+percentage)) / 100 }
+        ? { ...timer, percentage, timeLeft: calculateTimeLeft(percentage) }
         : timer
   }));
   };
@@ -117,7 +123,7 @@ function App() {
   const startTimers = () => {
     setTimers(timers.map(timer => ({
       ...timer,
-      timeLeft: (baseTime * 60 * (100+timer.percentage)) / 100
+      timeLeft: calculateTimeLeft(timer.percentage)
     })));
     setIsRunning(true);
   };
@@ -126,7 +132,7 @@ function App() {
     setIsRunning(false);
     setTimers(timers.map(timer => ({
       ...timer,
-      timeLeft: (baseTime * 60 * (100+timer.percentage)) / 100
+      timeLeft: calculateTimeLeft(timer.percentage)
     })));
   };
 
@@ -135,7 +141,7 @@ function App() {
     setTimers(
       PRESET_MODES[mode].map(timer => ({
         ...timer,
-        timeLeft: (baseTime * 60 * (100+timer.percentage)) / 100
+        timeLeft: calculateTimeLeft(timer.percentage)
       }))
     );
   };
