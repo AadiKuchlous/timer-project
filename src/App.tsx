@@ -10,13 +10,13 @@ interface Timer {
 
 const PRESET_MODES = {
   single: [
-    { id: '1', percentage: 100, color: '#cacaca' }
+    { id: '1', percentage: 0, color: '#cacaca' }
   ],
   multiple: [
-    { id: '1', percentage: 100, color: '#cacaca' },
-    { id: '2', percentage: 125, color: '#f5a399' },
-    { id: '3', percentage: 150, color: '#a1dbdf' },
-    { id: '4', percentage: 200, color: '#ffd458' }
+    { id: '1', percentage: 0, color: '#cacaca' },
+    { id: '2', percentage: 25, color: '#f5a399' },
+    { id: '3', percentage: 50, color: '#a1dbdf' },
+    { id: '4', percentage: 100, color: '#ffd458' }
   ]
 };
 
@@ -98,7 +98,7 @@ function App() {
       percentage = Number.isNaN(percentage) ? 0 : percentage;
       const base_time = Number.isNaN(baseTime) ? 0 : baseTime;
       return timer.id === id 
-        ? { ...timer, percentage, timeLeft: (base_time * 60 * percentage) / 100 }
+        ? { ...timer, percentage, timeLeft: (base_time * 60 * (100+percentage)) / 100 }
         : timer
   }));
   };
@@ -106,7 +106,7 @@ function App() {
   const UpdateStartTime = () => {
     setTimers(timers.map(timer => {
       const base_time = Number.isNaN(baseTime) ? 0 : baseTime;
-      return { ...timer, timeLeft: (base_time * 60 * timer.percentage) / 100 }
+      return { ...timer, timeLeft: (base_time * 60 * (100+timer.percentage)) / 100 }
   }));
   };
 
@@ -117,7 +117,7 @@ function App() {
   const startTimers = () => {
     setTimers(timers.map(timer => ({
       ...timer,
-      timeLeft: (baseTime * 60 * timer.percentage) / 100
+      timeLeft: (baseTime * 60 * (100+timer.percentage)) / 100
     })));
     setIsRunning(true);
   };
@@ -126,7 +126,7 @@ function App() {
     setIsRunning(false);
     setTimers(timers.map(timer => ({
       ...timer,
-      timeLeft: (baseTime * 60 * timer.percentage) / 100
+      timeLeft: (baseTime * 60 * (100+timer.percentage)) / 100
     })));
   };
 
@@ -135,7 +135,7 @@ function App() {
     setTimers(
       PRESET_MODES[mode].map(timer => ({
         ...timer,
-        timeLeft: (baseTime * 60 * timer.percentage) / 100
+        timeLeft: (baseTime * 60 * (100+timer.percentage)) / 100
       }))
     );
   };
