@@ -166,7 +166,7 @@ function App() {
                 disabled={isRunning}
                 className="px-6 py-2.5 bg-purple-500 text-white rounded-md hover:bg-purple-600 disabled:opacity-50 font-medium"
               >
-                Normal
+                Base
               </button>
               <button
                 onClick={() => setPresetMode('multiple')}
