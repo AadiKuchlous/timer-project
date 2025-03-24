@@ -35,6 +35,21 @@ function App() {
   const [numCols, setNumCols] = useState(1);
   const timerGridRef = useRef<HTMLDivElement>(null);
 
+  // Prevent accidental tab close
+  useEffect(() => {
+    const handleBeforeUnload = (e: any) => {
+      e.preventDefault();
+      e.returnValue = ""; // Required for most modern browsers
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+
   useEffect(() => {
     let interval: number | undefined;
     
