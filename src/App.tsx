@@ -35,6 +35,10 @@ function App() {
   const [numCols, setNumCols] = useState(1);
   const timerGridRef = useRef<HTMLDivElement>(null);
 
+  const [announcementText, setAnnouncementText] = useState<string>(
+    `Please sit in odd-numbered seats\nHave your ID out and note sheets filled\nHave your backpacks on the seat next to you\nIf you finish in the last 5 minutes, stay seated`
+  );
+
   // Prevent accidental tab close
   useEffect(() => {
     const handleBeforeUnload = (e: any) => {
@@ -297,6 +301,19 @@ function App() {
               {isFullscreen ? <Minimize2 size={24} /> : <Maximize2 size={24} />}
             </button>
           </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 relative">
+          <h1 className="text-3xl font-bold text-gray-800">Announcements</h1>
+          <textarea
+            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+            rows={8}
+            value={announcementText}
+            onChange={(e) => setAnnouncementText(e.target.value)}
+            id = "announcementText"
+          />
         </div>
       </div>
     </div>
