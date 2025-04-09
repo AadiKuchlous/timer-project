@@ -232,20 +232,20 @@ function App() {
                 disabled={isRunning}
                 className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50 flex items-center gap-2"
               >
-                <Play size={20} /> Start
+                <Play size={20} strokeWidth={"10%"} /> Start
               </button>
               <button
                 onClick={resetTimers}
                 className="px-6 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 flex items-center gap-2"
               >
-                <RefreshCw size={20} /> Reset
+                <RefreshCw size={20} strokeWidth={"10%"} /> Reset
               </button>
               <button
                 onClick={addTimer}
                 disabled={isRunning}
                 className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
               >
-                <Plus size={20} /> Add Timer
+                <Plus size={20} strokeWidth={"10%"} /> Add Timer
               </button>
             </div>
           </div>
@@ -268,7 +268,7 @@ function App() {
                   disabled={isRunning}
                   className="absolute top-2 right-2 p-1 hover:bg-white/20 rounded-full transition-colors"
                 >
-                  <Trash2 size={20} />
+                  <Trash2 size={20} strokeWidth={"10%"} />
                 </button>
                 
                 <div className="mb-4">
@@ -298,7 +298,7 @@ function App() {
               className="fixed bottom-4 right-4 p-3 bg-gray-800 text-white rounded-full hover:bg-gray-700 shadow-lg z-50"
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
-              {isFullscreen ? <Minimize2 size={24} /> : <Maximize2 size={24} />}
+              {isFullscreen ? <Minimize2 size={24} strokeWidth={"10%"} /> : <Maximize2 size={24} strokeWidth={"10%"} />}
             </button>
           </div>
         </div>
