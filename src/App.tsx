@@ -21,8 +21,8 @@ const PRESET_MODES = {
 };
 
 function App() {
-  const [baseTime, setBaseTime] = useState<number>(35);
-  const [baseTimeString, setBaseTimeString] = useState<string>("35");
+  const [baseTime, setBaseTime] = useState<number>(180);
+  const [baseTimeString, setBaseTimeString] = useState<string>(baseTime.toString());
   const [timers, setTimers] = useState<Timer[]>(
     PRESET_MODES.single.map(timer => ({
       ...timer,
@@ -174,9 +174,10 @@ function App() {
   };
 
   const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
