@@ -21,7 +21,7 @@ const PRESET_MODES = {
 };
 
 function App() {
-  const [baseTime, setBaseTime] = useState<number>(180);
+  const [baseTime, setBaseTime] = useState<number>(35);
   const [baseTimeString, setBaseTimeString] = useState<string>(baseTime.toString());
   const [timers, setTimers] = useState<Timer[]>(
     PRESET_MODES.single.map(timer => ({
