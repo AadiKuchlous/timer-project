@@ -44,7 +44,7 @@ function App() {
   const [announcementText, setAnnouncementText] = useState('');
 
   useEffect(() => {
-    fetch('/announcements.txt')
+    fetch(`${import.meta.env.BASE_URL}announcements.txt`)
       .then(response => {
         if (!response.ok) throw new Error('Could not load announcements');
         return response.text();
