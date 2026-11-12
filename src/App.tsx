@@ -35,9 +35,21 @@ function App() {
   const [numCols, setNumCols] = useState(1);
   const timerGridRef = useRef<HTMLDivElement>(null);
 
-  const [announcementText, setAnnouncementText] = useState<string>(
-    `Please sit in odd-numbered seats\nHave your ID out and note sheets filled\nHave your backpacks on the seat next to you\nIf you finish in the last 5 minutes, stay seated`
-  );
+  // const [announcementText, setAnnouncementText] = useState<string>(
+  //   `Please sit in odd-numbered seats\nHave your ID out and note sheets filled\nHave your backpacks on the seat next to you\nIf you finish in the last 5 minutes, stay seated`
+  // );
+
+  const [announcementText, setAnnouncementText] = useState('');
+
+  useEffect(() => {
+    fetch('/announcements.txt')
+      .then(response => {
+        if (!response.ok) throw new Error('Could not load announcements');
+        return response.text();
+      })
+      .then(setAnnouncementText)
+      .catch(console.error);
+  }, []);
 
   // Prevent accidental tab close
   useEffect(() => {
@@ -56,7 +68,7 @@ function App() {
 
   useEffect(() => {
     let interval: number | undefined;
-    
+
     if (isRunning) {
       interval = setInterval(() => {
         setTimers(prevTimers => {
@@ -65,7 +77,7 @@ function App() {
             setIsRunning(false);
             return prevTimers;
           }
-          
+
           return prevTimers.map(timer => ({
             ...timer,
             timeLeft: Math.max(0, timer.timeLeft - 1)
@@ -96,7 +108,7 @@ function App() {
 
   const addTimer = () => {
     const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
       '#bdf682', '#D4A5A5', '#9B59B6', '#3498DB'
     ];
     const newTimer: Timer = {
@@ -122,7 +134,7 @@ function App() {
     setTimers(timers.map(timer => {
       percentage = Number.isNaN(percentage) ? 0 : percentage;
       const base_time = Number.isNaN(baseTime) ? 0 : baseTime;
-      return timer.id === id 
+      return timer.id === id
         ? { ...timer, percentage, timeLeft: calculateTimeLeft(percentage) }
         : timer
   }));
@@ -203,7 +215,7 @@ function App() {
               </button>
             </div>
           </div>
-          
+
           <div className="flex gap-4 mb-6">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -251,8 +263,8 @@ function App() {
             </div>
           </div>
 
-          <div 
-            ref={timerGridRef} 
+          <div
+            ref={timerGridRef}
             className={`relative grid gap-6 ${isFullscreen ? 'h-screen p-6 bg-gray-100' : ''}`}
             style={{ gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))` }}
           >
@@ -271,7 +283,7 @@ function App() {
                 >
                   <Trash2 size={20} strokeWidth={"10%"} />
                 </button>
-                
+
                 <div className="mb-4">
                   <input
                   type="number"
@@ -285,7 +297,7 @@ function App() {
                   disabled={isRunning}
                   />
                 </div>
-                
+
                 <div className="text-center">
                   <div className={`font-bold mb-2 ${isFullscreen ? 'text-8xl' : 'text-4xl'}`}>
                     {formatTime(timer.timeLeft)}
@@ -293,7 +305,7 @@ function App() {
                 </div>
               </div>
             ))}
-            
+
             <button
               onClick={toggleFullscreen}
               className="fixed bottom-4 right-4 p-3 bg-gray-800 text-white rounded-full hover:bg-gray-700 shadow-lg z-50"
