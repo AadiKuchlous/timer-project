@@ -30,7 +30,9 @@ function App() {
     }))
   );
   const [isRunning, setIsRunning] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
+  const [isFallbackFullscreen, setIsFallbackFullscreen] = useState(false);
+  const isFullscreen = isNativeFullscreen || isFallbackFullscreen;
   const [numRows, setNumRows] = useState(1);
   const [numCols, setNumCols] = useState(1);
   const timerGridRef = useRef<HTMLDivElement>(null);
@@ -91,12 +93,28 @@ function App() {
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(document.fullscreenElement !== null);
+      setIsNativeFullscreen(document.fullscreenElement !== null);
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  useEffect(() => {
+    if (!isFallbackFullscreen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsFallbackFullscreen(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isFallbackFullscreen]);
 
   useEffect(() => {
     const updateGridLayout = () => {
@@ -178,10 +196,22 @@ function App() {
   };
 
   const toggleFullscreen = async () => {
-    if (!isFullscreen) {
-      await timerGridRef.current?.requestFullscreen();
-    } else {
+    if (isFallbackFullscreen) {
+      setIsFallbackFullscreen(false);
+    } else if (document.fullscreenElement) {
       await document.exitFullscreen();
+    } else {
+      const grid = timerGridRef.current;
+      if (!grid?.requestFullscreen || !document.fullscreenEnabled) {
+        setIsFallbackFullscreen(true);
+        return;
+      }
+
+      try {
+        await grid.requestFullscreen();
+      } catch {
+        setIsFallbackFullscreen(true);
+      }
     }
   };
 
@@ -265,7 +295,7 @@ function App() {
 
           <div
             ref={timerGridRef}
-            className={`relative grid gap-6 ${isFullscreen ? 'h-screen p-6 bg-gray-100' : ''}`}
+            className={`grid gap-6 ${isFallbackFullscreen ? 'fixed inset-0 z-40 h-[100dvh] overflow-auto p-4 bg-gray-100' : `relative ${isFullscreen ? 'h-screen p-6 bg-gray-100' : ''}`}`}
             style={{ gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))` }}
           >
             {timers.map(timer => (
@@ -299,7 +329,7 @@ function App() {
                 </div>
 
                 <div className="text-center">
-                  <div className={`font-bold mb-2 ${isFullscreen ? 'text-8xl' : 'text-4xl'}`}>
+                  <div className={`font-bold mb-2 ${isFullscreen ? 'text-[clamp(2rem,10vw,6rem)]' : 'text-4xl'}`}>
                     {formatTime(timer.timeLeft)}
                   </div>
                 </div>
