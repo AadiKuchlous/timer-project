@@ -30,14 +30,28 @@ function App() {
     }))
   );
   const [isRunning, setIsRunning] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
+  const [isFallbackFullscreen, setIsFallbackFullscreen] = useState(false);
+  const isFullscreen = isNativeFullscreen || isFallbackFullscreen;
   const [numRows, setNumRows] = useState(1);
   const [numCols, setNumCols] = useState(1);
   const timerGridRef = useRef<HTMLDivElement>(null);
 
-  const [announcementText, setAnnouncementText] = useState<string>(
-    `Please sit in odd-numbered seats\nHave your ID out and note sheets filled\nHave your backpacks on the seat next to you\nIf you finish in the last 5 minutes, stay seated`
-  );
+  // const [announcementText, setAnnouncementText] = useState<string>(
+  //   `Please sit in odd-numbered seats\nHave your ID out and note sheets filled\nHave your backpacks on the seat next to you\nIf you finish in the last 5 minutes, stay seated`
+  // );
+
+  const [announcementText, setAnnouncementText] = useState('');
+
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}announcements.txt`)
+      .then(response => {
+        if (!response.ok) throw new Error('Could not load announcements');
+        return response.text();
+      })
+      .then(setAnnouncementText)
+      .catch(console.error);
+  }, []);
 
   // Prevent accidental tab close
   useEffect(() => {
@@ -56,7 +70,7 @@ function App() {
 
   useEffect(() => {
     let interval: number | undefined;
-    
+
     if (isRunning) {
       interval = setInterval(() => {
         setTimers(prevTimers => {
@@ -65,7 +79,7 @@ function App() {
             setIsRunning(false);
             return prevTimers;
           }
-          
+
           return prevTimers.map(timer => ({
             ...timer,
             timeLeft: Math.max(0, timer.timeLeft - 1)
@@ -79,12 +93,28 @@ function App() {
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(document.fullscreenElement !== null);
+      setIsNativeFullscreen(document.fullscreenElement !== null);
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  useEffect(() => {
+    if (!isFallbackFullscreen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsFallbackFullscreen(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isFallbackFullscreen]);
 
   useEffect(() => {
     const updateGridLayout = () => {
@@ -96,7 +126,7 @@ function App() {
 
   const addTimer = () => {
     const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
       '#bdf682', '#D4A5A5', '#9B59B6', '#3498DB'
     ];
     const newTimer: Timer = {
@@ -122,7 +152,7 @@ function App() {
     setTimers(timers.map(timer => {
       percentage = Number.isNaN(percentage) ? 0 : percentage;
       const base_time = Number.isNaN(baseTime) ? 0 : baseTime;
-      return timer.id === id 
+      return timer.id === id
         ? { ...timer, percentage, timeLeft: calculateTimeLeft(percentage) }
         : timer
   }));
@@ -166,10 +196,22 @@ function App() {
   };
 
   const toggleFullscreen = async () => {
-    if (!isFullscreen) {
-      await timerGridRef.current?.requestFullscreen();
-    } else {
+    if (isFallbackFullscreen) {
+      setIsFallbackFullscreen(false);
+    } else if (document.fullscreenElement) {
       await document.exitFullscreen();
+    } else {
+      const grid = timerGridRef.current;
+      if (!grid?.requestFullscreen || !document.fullscreenEnabled) {
+        setIsFallbackFullscreen(true);
+        return;
+      }
+
+      try {
+        await grid.requestFullscreen();
+      } catch {
+        setIsFallbackFullscreen(true);
+      }
     }
   };
 
@@ -203,7 +245,7 @@ function App() {
               </button>
             </div>
           </div>
-          
+
           <div className="flex gap-4 mb-6">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -251,9 +293,9 @@ function App() {
             </div>
           </div>
 
-          <div 
-            ref={timerGridRef} 
-            className={`relative grid gap-6 ${isFullscreen ? 'h-screen p-6 bg-gray-100' : ''}`}
+          <div
+            ref={timerGridRef}
+            className={`grid gap-6 ${isFallbackFullscreen ? 'fixed inset-0 z-40 h-[100dvh] overflow-auto p-4 bg-gray-100' : `relative ${isFullscreen ? 'h-screen p-6 bg-gray-100' : ''}`}`}
             style={{ gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))` }}
           >
             {timers.map(timer => (
@@ -271,7 +313,7 @@ function App() {
                 >
                   <Trash2 size={20} strokeWidth={"10%"} />
                 </button>
-                
+
                 <div className="mb-4">
                   <input
                   type="number"
@@ -285,15 +327,15 @@ function App() {
                   disabled={isRunning}
                   />
                 </div>
-                
+
                 <div className="text-center">
-                  <div className={`font-bold mb-2 ${isFullscreen ? 'text-8xl' : 'text-4xl'}`}>
+                  <div className={`font-bold mb-2 ${isFullscreen ? 'text-[clamp(2rem,10vw,6rem)]' : 'text-4xl'}`}>
                     {formatTime(timer.timeLeft)}
                   </div>
                 </div>
               </div>
             ))}
-            
+
             <button
               onClick={toggleFullscreen}
               className="fixed bottom-4 right-4 p-3 bg-gray-800 text-white rounded-full hover:bg-gray-700 shadow-lg z-50"
